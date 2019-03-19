@@ -1,6 +1,7 @@
 # Bogdan_Exercise2
 
 Requirement:
+
 Implement a system to process single variable integer coefficients.
 Have the system perform the following operations on the polynomials:
 · addition, substraction
@@ -8,6 +9,9 @@ Have the system perform the following operations on the polynomials:
 · derivation
 · integration on an undefined domain
 · draw the graph of the input polynomials.
+
+
+Implementation:
 
 The chosen type for the polynome type is a Dictionary<int, float> with the key as power and value as coeficient.
   This datatype was chosen becasue of the unique value of the keys in a dictionary. A polynomial should have a of each exponent value. 
