@@ -13,7 +13,7 @@ Have the system perform the following operations on the polynomials:
 
 Implementation:
 
-The chosen type for the polynome type is a Dictionary<int, float> with the key as power and value as coeficient.
+The chosen type for the polynome type is a Dictionary<int, float> with the key as exponent and value as coeficient.
   This datatype was chosen becasue of the unique value of the keys in a dictionary. A polynomial should have a of each exponent value. 
 
 PolynomeMath namspace is used to perform the mathemathical operations on the polynome type.
