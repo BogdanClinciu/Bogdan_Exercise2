@@ -10,20 +10,22 @@ namespace PolynomeUtils
     /// <summary>Polinomial parsing.
     /// <para>This class contains the methods needed for parsing a polynomial to string.</para>
     /// </summary>
-    public class Parser
+    public class PolynomeParser
     {
         public const string NO_POLYNOME = "No polynome entered.";
 
         private static readonly List<char> allowedCharList = new List<char>() { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', ' ', '.'};
         private static readonly List<string> superscriptMap = new List<string>() {"⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"};
-        private const string INVALID_ENTRY = "Something went wrong, please re-enter the coeficients.";
         private const string SPACE = " ";
         private const string X_MARK = "x";
         private const string PLUS_MARK = "+";
         private const string MINUS_MARK = "-";
 
 
-        public static void ParsePolynome(string input, Text propperMathText, Polynome polynome)
+        /// <summary>Parses input string to polynome and updates math notation text.
+        /// <seealso cref="FormatMathNotationPolynome.cs"/>
+        /// </summary>
+        public static void ParsePolynome(string input, Text mathNotationText, Polynome polynome)
         {
             if(input.Length > 0)
             {
@@ -39,29 +41,26 @@ namespace PolynomeUtils
                         if (float.TryParse(splitInput[(splitInput.Length - 1) - power], out coeficient))
                         {
                             polynome.elements.Add(power, coeficient);
-                            propperMathText.text = FormatMathNotationText(polynome);
+                            mathNotationText.text = FormatMathNotationPolynome(polynome);
                         }
                         else if (splitInput.Length.Equals(1) && splitInput[0].Equals("-"))
                         {
                             Debug.Log(splitInput.Length);
                             polynome.elements.Add(power, -1);
-                            propperMathText.text = FormatMathNotationText(polynome);
+                            mathNotationText.text = FormatMathNotationPolynome(polynome);
                         }
                     }
                 }
             }
             else
             {
-                propperMathText.text = FormatMathNotationText(null);
+                mathNotationText.text = FormatMathNotationPolynome(null);
             }
         }
 
-        public static string ParsePolynome(Polynome inputPolynome)
-        {
-            return FormatMathNotationText(inputPolynome);
-        }
-
-        private static string FormatMathNotationText(Polynome inputPolynome)
+        /// <summary>Returns the mathematical notation for the input polynome.
+        /// </summary>
+        public static string FormatMathNotationPolynome(Polynome inputPolynome)
         {
             if(inputPolynome == null)
             {
@@ -69,18 +68,26 @@ namespace PolynomeUtils
             }
 
             string mathNotation = string.Empty;
+
             for (int i = 0; i < inputPolynome.elements.Count ; i++)
             {
                 KeyValuePair<int,float> element = inputPolynome.elements.ElementAt(i);
-                mathNotation    += DetermineSign(element.Value, (i.Equals(0)))
-                                + Mathf.Abs(element.Value)
-                                + ToSuperscript(inputPolynome.elements.Keys.ElementAt(i))
-                                + SPACE;
+
+                //We have chosen to hide 0 coeficient values so we only add non zero values to the mathematical notation string
+                if(!element.Value.Equals(0))
+                {
+                    mathNotation    += DetermineSign(element.Value, (i.Equals(0)), mathNotation)
+                                    + Mathf.Abs(element.Value)
+                                    + ToSuperscript(inputPolynome.elements.Keys.ElementAt(i))
+                                    + SPACE;
+                }
             }
 
             return mathNotation;
         }
 
+        /// <summary>Returns the exponent character if it is necessary.
+        /// </summary>
         private static string ToSuperscript(int value)
         {
             string superscript = string.Empty;
@@ -100,11 +107,13 @@ namespace PolynomeUtils
             return superscript;
         }
 
-        private static string DetermineSign(float value, bool isLast)
+        /// <summary>Returns the corect sign if any (for the value parameter) based on location in string.
+        /// </summary>
+        private static string DetermineSign(float value, bool isLast, string notationString)
         {
             if (value >= 0)
             {
-                if(!isLast)
+                if(!isLast && notationString.Length > 0)
                 {
                     return PLUS_MARK + SPACE;
                 }
@@ -119,6 +128,13 @@ namespace PolynomeUtils
             }
         }
 
+        /// <summary>Returns curent polynome input character if it is valid.
+        /// </summary>
+        /*Returns either an empty character or if the enrty is valid the curent input character
+            special cases include the decimal point, minus and space characters.
+            In these cases we check to see if the curent character would make sense within the context of the input string.
+            For example the space character will not be returned if it is preceded by another space.
+         */
         public static char PolynomeInputValidation(string input, int charIndex, char addedChar)
         {
             if(!allowedCharList.Contains(addedChar))
@@ -185,6 +201,8 @@ namespace PolynomeUtils
 
     public class UI_Utils
     {
+        /// <summary>Sets button interactability to state for each button in the given array.
+        /// </summary>
         public static void ToggleButtonInteractability(Button[] buttonArray, bool targetState)
         {
             foreach (Button button in buttonArray)

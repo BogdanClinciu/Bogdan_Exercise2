@@ -5,20 +5,17 @@ using UnityEngine.UI;
 using PolynomeMath;
 using System.Linq;
 
+/// <summary>Plots and draws graph for x value range for a given polynomial.
+/// </summary>
 public class PolynomeGraphHandler : MonoBehaviour
 {
-    [SerializeField]
-    private RectTransform graphRect;
-    [SerializeField]
-    private Slider iterationsSlider;
-    [SerializeField]
-    private Slider xBoundsSlider;
-    [SerializeField]
-    private Text iterationsText;
-    [SerializeField]
-    private Text xBoundsText;
-    [SerializeField]
-    private LineRenderer graphRenderer;
+
+    #region UI_References
+        [SerializeField]
+        private RectTransform graphRect;
+        [SerializeField]
+        private LineRenderer graphRenderer;
+    #endregion
 
     private static Polynome polynome;
 
@@ -34,13 +31,6 @@ public class PolynomeGraphHandler : MonoBehaviour
     private void Start()
     {
         SizeGraphRect();
-        UpdateIterationsText();
-        UpdateXBoundText();
-    }
-
-    private void Update()
-    {
-        Debug.DrawLine(graphRect.TransformPoint(graphRect.rect.max), graphRect.TransformPoint(graphRect.rect.min), Color.red);
     }
 
     public static void SetGraphPolynome(Polynome polynomeToPlot)
@@ -50,20 +40,20 @@ public class PolynomeGraphHandler : MonoBehaviour
 
     public void PlotGraph()
     {
-        // use graph rect height to limit graph y
+        //Create a new array with the desired amout of points
         plotPoints = new Vector3[GRAPH_LIMITS * BASE_DIVISIONS];
 
+        //We then evaluate for evenly divided points within graph x limits
         for (int i = 0; i < plotPoints.Length; i++)
         {
             plotPoints[i].x = Mathf.Lerp(-GRAPH_LIMITS, GRAPH_LIMITS, (float)i/(plotPoints.Length - 1));
             plotPoints[i].y = FuncS.PVal(polynome, plotPoints[i].x);
         }
 
+        //Based on min, and max values we determine the x axis scalar we need in order to limit the graph to out grid rect
         float scaleXToFit = (plotPoints.Max(a => a.x) > Mathf.Abs(plotPoints.Min(a => a.x))) ? (graphRectHeight/2) / plotPoints.Max(a => a.x) : (graphRectHeight/2) / plotPoints.Min(a => a.x);
-        float scaleYToFit = (plotPoints.Max(a => a.y) > Mathf.Abs(plotPoints.Min(a => a.y))) ? (graphRectHeight/2) / plotPoints.Max(a => a.y) : (graphRectHeight/2) / plotPoints.Min(a => a.y);
-        //Debug.Log(plotPoints.Max(a => a.y) + ">" + graphRectHeight);
 
-        //normalizeScale
+        //We then normalize all points with respect to the grid rect height
         for (int i = 0; i < plotPoints.Length; i++)
         {
             plotPoints[i].x *= (-scaleXToFit);
@@ -72,9 +62,8 @@ public class PolynomeGraphHandler : MonoBehaviour
             plotPoints[i] += graphCenterPos;
         }
 
-        //remove out of bounds vectors graphRect.TransformPoint(graphRect.rect.max), graphRect.TransformPoint(graphRect.rect.min)
+        //Remove out of bounds vectors graphRect.TransformPoint(graphRect.rect.max), graphRect.TransformPoint(graphRect.rect.min)
         List<Vector3> ajustedPoints = new List<Vector3>();
-
         for (int i = 0; i < plotPoints.Length; i++)
         {
             if(plotPoints[i].y < (graphRect.TransformPoint(graphRect.rect.max).y))
@@ -86,23 +75,8 @@ public class PolynomeGraphHandler : MonoBehaviour
             }
         }
 
-        Debug.Log("max: " + graphRect.rect.max.y + "   min: " + graphRect.rect.min.y);
-
-        // graphRenderer.positionCount = plotPoints.Length;
-        // graphRenderer.SetPositions(plotPoints);
-
         graphRenderer.positionCount = ajustedPoints.Count;
         graphRenderer.SetPositions(ajustedPoints.ToArray());
-    }
-
-    public void UpdateIterationsText()
-    {
-        iterationsText.text = "Div" + "\n" + iterationsSlider.value + "\n"  + "*10";
-    }
-
-    public void UpdateXBoundText()
-    {
-        xBoundsText.text = xBoundsSlider.value + "\n" + "to" + "\n" + xBoundsSlider.value;
     }
 
     private void SizeGraphRect()

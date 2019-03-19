@@ -2,6 +2,8 @@
 using UnityEngine.UI;
 using PolynomeMath;
 
+/// <summary>Handles the x input for value/evaluate type operations.
+/// </summary>
 public class PolynomeXInputHandler : MonoBehaviour
 {
    [SerializeField]
@@ -42,6 +44,8 @@ public class PolynomeXInputHandler : MonoBehaviour
         ToggleXInputPanel();
     }
 
+
+    //Toggles confirm button based on the contents of the x value input field
     public void ValidateValue()
     {
         if(!xValueInputField.text.Length.Equals(0))

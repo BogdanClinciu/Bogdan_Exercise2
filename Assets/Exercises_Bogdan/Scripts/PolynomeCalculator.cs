@@ -4,7 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using PolynomeMath;
+using PolynomeUtils;
 
+
+/// <summary>Handles two polynomial and single polynomial operations and result panel UI interactability.
+/// </summary>
 public class PolynomeCalculator : MonoBehaviour
 {
 
@@ -49,10 +53,15 @@ public class PolynomeCalculator : MonoBehaviour
     private void Awake()
     {
         ResultPolynome = new Polynome(true);
-        polyHandlerOne.onToggleButtons = (ToggleSimpleOperationButtons);
-        polyHandlerTwo.onToggleButtons = (ToggleSimpleOperationButtons);
+
+        //We set ToggleOperationButtons method to polyHandler one and two, in order to check and update buttons on polynome validation
+        polyHandlerOne.OnToggleButtons = ToggleOperationButtons;
+        polyHandlerTwo.OnToggleButtons = ToggleOperationButtons;
+
+        //For single plolynome operations we set the OnUpdateUI methods and trigger them from the script containing the single polynomial
         OnUpdateUI = UpdateResultText;
         OnUpdateUIString = UpdateResultText;
+
         xInputParent.SetActive(false);
     }
 
@@ -61,7 +70,7 @@ public class PolynomeCalculator : MonoBehaviour
         ResultPolynome.elements.Clear();
         simpleOperationButtons = simpleOperationButtonsParent.GetComponentsInChildren<Button>();
         resultOperationButtons = resultOperationButtonsParent.GetComponentsInChildren<Button>();
-        ToggleSimpleOperationButtons();
+        ToggleOperationButtons();
         ToggleResultButtons();
     }
 
@@ -82,12 +91,6 @@ public class PolynomeCalculator : MonoBehaviour
         ResultPolynome = FuncS.PMul(polyHandlerOne.CurentPolynome, polyHandlerTwo.CurentPolynome);
         UpdateResultText(false);
     }
-
-    // public void OnAddPolynomials()
-    // {
-    //     resultPolynome = FuncS.PAdd(polyHandlerOne.CurentPolynome, polyHandlerTwo.CurentPolynome);
-    //     UpdateResultText();
-    // }
 
     public void OnDeriveResult()
     {
@@ -111,19 +114,20 @@ public class PolynomeCalculator : MonoBehaviour
         PolynomeGraphHandler.SetGraphPolynome(ResultPolynome);
     }
 
-    private void ToggleSimpleOperationButtons()
+    //Toggles the operation buttons on if both PolynomeHandlers curently have a valid polynomial
+    private void ToggleOperationButtons()
     {
-        bool buttonsState = (polyHandlerOne.PolynomeValid && polyHandlerTwo.PolynomeValid);
+        bool buttonsState = (polyHandlerOne.IsPolynomeValid && polyHandlerTwo.IsPolynomeValid);
         if(lastButtonsState != buttonsState)
         {
             lastButtonsState = buttonsState;
-            PolynomeUtils.UI_Utils.ToggleButtonInteractability(simpleOperationButtons, buttonsState);
+            UI_Utils.ToggleButtonInteractability(simpleOperationButtons, buttonsState);
         }
     }
 
     private void UpdateResultText(bool isIntegrate)
     {
-        resultText.text = PolynomeUtils.Parser.ParsePolynome(ResultPolynome);
+        resultText.text = PolynomeParser.FormatMathNotationPolynome(ResultPolynome);
         if(isIntegrate)
         {
             resultText.text += CONSTANT;
@@ -135,12 +139,12 @@ public class PolynomeCalculator : MonoBehaviour
     {
         ResultPolynome.elements.Clear();
         resultText.text = value;
-        PolynomeUtils.UI_Utils.ToggleButtonInteractability(resultOperationButtons, false);
+        UI_Utils.ToggleButtonInteractability(resultOperationButtons, false);
     }
 
     private void ToggleResultButtons()
     {
         bool targetState = (ResultPolynome != null && ResultPolynome.elements.Count > 0);
-        PolynomeUtils.UI_Utils.ToggleButtonInteractability(resultOperationButtons, targetState);
+        UI_Utils.ToggleButtonInteractability(resultOperationButtons, targetState);
     }
 }

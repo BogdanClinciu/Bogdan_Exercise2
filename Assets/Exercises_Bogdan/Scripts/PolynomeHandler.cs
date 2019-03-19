@@ -4,6 +4,9 @@ using UnityEngine.UI;
 using PolynomeMath;
 using PolynomeUtils;
 
+
+/// <summary>Handles polynome input, initialization, and single polynome operations.
+/// </summary>
 public class PolynomeHandler : MonoBehaviour
 {
 
@@ -23,10 +26,12 @@ public class PolynomeHandler : MonoBehaviour
     #endregion
 
     public Polynome CurentPolynome { get; private set; }
-    public bool PolynomeValid { get; private set; } = false;
-    public UnityEngine.Events.UnityAction onToggleButtons;
+    public bool IsPolynomeValid { get; private set; } = false;
+    public UnityEngine.Events.UnityAction OnToggleButtons;
 
     private bool lastButtonsState = true;
+
+
 
     private void Start()
     {
@@ -34,23 +39,25 @@ public class PolynomeHandler : MonoBehaviour
 
         CurentPolynome = new Polynome(true);
 
-        polyProperText.text = Parser.NO_POLYNOME;
+        polyProperText.text = PolynomeParser.NO_POLYNOME;
 
         TogglePolynomeButtons(string.Empty);
 
-        polyInputField.onValidateInput += delegate(string input, int charIndex, char addedChar) { return Parser.PolynomeInputValidation(input, charIndex, addedChar); };
+        //Here we subscribe out custom validation method to the onValidateInput funcition on the polynome input field
+        polyInputField.onValidateInput += delegate(string input, int charIndex, char addedChar) { return PolynomeParser.PolynomeInputValidation(input, charIndex, addedChar); };
 
-        polyInputField.onValueChanged.AddListener((string input) => Parser.ParsePolynome(input, polyProperText, CurentPolynome));
+        //We add listeners to the onValueChanged event of the input field to check polynome validity and parse the polynome
+        polyInputField.onValueChanged.AddListener((string input) => PolynomeParser.ParsePolynome(input, polyProperText, CurentPolynome));
         polyInputField.onValueChanged.AddListener((string input) => TogglePolynomeButtons(input));
-        if (onToggleButtons != null)
+        if (OnToggleButtons != null)
         {
-            polyInputField.onValueChanged.AddListener((string input) => onToggleButtons());
+            polyInputField.onValueChanged.AddListener((string input) => OnToggleButtons());
         }
     }
 
     private void OnDestroy()
     {
-        polyInputField.onValidateInput -= delegate(string input, int charIndex, char addedChar) { return Parser.PolynomeInputValidation(input, charIndex, addedChar); };
+        polyInputField.onValidateInput -= delegate(string input, int charIndex, char addedChar) { return PolynomeParser.PolynomeInputValidation(input, charIndex, addedChar); };
 
         polyInputField.onValueChanged.RemoveAllListeners();
     }
@@ -77,13 +84,14 @@ public class PolynomeHandler : MonoBehaviour
         PolynomeGraphHandler.SetGraphPolynome(CurentPolynome);
     }
 
+    //Toggles the operation buttons on if this handler has a valid polynomial
     private void TogglePolynomeButtons(string input)
     {
         bool buttonsState = input != string.Empty;
         if(lastButtonsState != buttonsState)
         {
             lastButtonsState = buttonsState;
-            PolynomeValid = buttonsState;
+            IsPolynomeValid = buttonsState;
             UI_Utils.ToggleButtonInteractability(polinomialButtons, buttonsState);
         }
     }

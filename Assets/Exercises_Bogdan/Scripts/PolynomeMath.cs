@@ -135,31 +135,40 @@ namespace PolynomeMath
             return result;
         }
 
-        public static Polynome PDiv(Polynome p1, Polynome p2)
-        {
-            //  p1/p2
+        #region Division_Try
+        // public static Polynome PDiv(Polynome p1, Polynome p2)
+        // {
+        //     //  p1/p2
 
-            Polynome result = new Polynome(true);
-            Polynome p1Cache = new Polynome(p1);
-            Polynome p2Cache = new Polynome(p2);
+        //     Polynome result = new Polynome(true);
+        //     Polynome P_numerator = new Polynome(p1.elements);
+        //     Polynome P_denominator = new Polynome(p2.elements);
+        //     Polynome P_abvLine = new Polynome(true);
+        //     Polynome P_underLine = new Polynome(true);
 
-            //first divide largest of p2 with largest of p1 --- get upper number
-                //then multiply upper number with p2 and substract from p1 == partial result
-                    //then divide largest or partial result by largest of p2
-                        //then multiply upper number by p2
+        //     for (int i = 0; i < P_denominator.elements.Count; i++)
+        //     {
+        //         P_abvLine.elements.Add(
+        //             P_numerator.elements.Keys.ElementAt(i) - P_denominator.elements.Keys.ElementAt(i),
+        //             P_numerator.elements.Values.ElementAt(i)/P_denominator.elements.Values.ElementAt(i)
+        //         );
+
+        //         for (int j = 0; j < P_abvLine.elements.Count; j++)
+        //         {
+
+        //         }
+        //     }
 
 
-            /*
-                step one... divide largest from p1 and p2 >>> add division result to result
-                step 2 ... multiply result ^ with p1
-                step 3 subtract result of multiplication from p2
-                    repeat ^ until subtraction == 0
+        //     //first divide largest of p2 with largest of p1 --- get upper number
+        //         //then multiply upper number with p2 and substract from p1 == partial result
+        //             //then divide largest or partial result by largest of p2
+        //                 //then multiply upper number by p2
 
-                divide multiply substract < repeat
-             */
 
-            return result;
-        }
+        //     return result;
+        // }
+        #endregion
 
         /// <summary>Evaluates the polynomial at the specified x value and returns the result as a string.
         /// </summary>
