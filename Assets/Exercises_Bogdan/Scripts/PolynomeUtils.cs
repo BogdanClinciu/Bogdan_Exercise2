@@ -45,7 +45,6 @@ namespace PolynomeUtils
                         }
                         else if (splitInput.Length.Equals(1) && splitInput[0].Equals("-"))
                         {
-                            Debug.Log(splitInput.Length);
                             polynome.elements.Add(power, -1);
                             mathNotationText.text = FormatMathNotationPolynome(polynome);
                         }

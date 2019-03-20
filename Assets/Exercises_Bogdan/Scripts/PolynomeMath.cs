@@ -135,40 +135,62 @@ namespace PolynomeMath
             return result;
         }
 
-        #region Division_Try
-        // public static Polynome PDiv(Polynome p1, Polynome p2)
-        // {
-        //     //  p1/p2
+        /// <summary>Divides the first (numerator) polynomial by the second one(denominator) and returns result + remainder as polynomials.
+        /// </summary>
+        public static KeyValuePair<Polynome,Polynome> PDiv(Polynome p1, Polynome p2)
+        {
+            //In case the denominator polynomial har more ellements we simply return the fisrt as the remainder
+            if(p2.elements.Count > p1.elements.Count)
+            {
+                return new KeyValuePair<Polynome, Polynome> (new Polynome(true), p1);
+            }
 
-        //     Polynome result = new Polynome(true);
-        //     Polynome P_numerator = new Polynome(p1.elements);
-        //     Polynome P_denominator = new Polynome(p2.elements);
-        //     Polynome P_abvLine = new Polynome(true);
-        //     Polynome P_underLine = new Polynome(true);
+            Polynome result = new Polynome(true);
+            Polynome numerator = new Polynome(p1);      //above fraction line
+            Polynome denominator = new Polynome(p2);    //below fraction line
 
-        //     for (int i = 0; i < P_denominator.elements.Count; i++)
-        //     {
-        //         P_abvLine.elements.Add(
-        //             P_numerator.elements.Keys.ElementAt(i) - P_denominator.elements.Keys.ElementAt(i),
-        //             P_numerator.elements.Values.ElementAt(i)/P_denominator.elements.Values.ElementAt(i)
-        //         );
+            //we determine the initial amount of iterations of the long division algorith we pass trough
+            int stepCount = numerator.elements.Count - 1;
 
-        //         for (int j = 0; j < P_abvLine.elements.Count; j++)
-        //         {
+            while (stepCount > 0)
+            {
+                //divide largest element of the numerator by the largets one of the denominator (determine multiplier)
+                int key = numerator.elements.Keys.ElementAt(0) - denominator.elements.Keys.ElementAt(0);
+                float val = numerator.elements.Values.ElementAt(0)/denominator.elements.Values.ElementAt(0);
 
-        //         }
-        //     }
+                //if at this point the resulting exponent is 0 we know this pass is the only one we need
+                if (numerator.elements.Keys.ElementAt(0) == 0)
+                {
+                    stepCount = 0;
+                    break;
+                }
 
+                //We create the multiplier polynome with the key and value we determined above
+                Polynome multiplier = new Polynome(true);
+                multiplier.elements.Add(key, val);
 
-        //     //first divide largest of p2 with largest of p1 --- get upper number
-        //         //then multiply upper number with p2 and substract from p1 == partial result
-        //             //then divide largest or partial result by largest of p2
-        //                 //then multiply upper number by p2
+                //At this point add the multiplier polynomial to the result
+                result = PAdd(result, multiplier);
 
+                //Create subtractor that we will subtract from the numerator
+                Polynome subtractor = new Polynome(true);
+                subtractor = PMul(multiplier, denominator);
 
-        //     return result;
-        // }
-        #endregion
+                //We then subtract the subtractor from the numerator
+                numerator = PSub(numerator, subtractor);
+
+                //not quite sure why this is needed yet but to afraid to remove
+                if (key == 0)
+                {
+                    stepCount = 0;
+                    break;
+                }
+
+                stepCount --;
+            }
+
+            return new KeyValuePair<Polynome, Polynome>(result,numerator);
+        }
 
         /// <summary>Evaluates the polynomial at the specified x value and returns the result as a string.
         /// </summary>

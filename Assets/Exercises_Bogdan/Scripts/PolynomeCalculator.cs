@@ -74,35 +74,47 @@ public class PolynomeCalculator : MonoBehaviour
         ToggleResultButtons();
     }
 
-    public void OnAddPolynomials()
-    {
-        ResultPolynome = FuncS.PAdd(polyHandlerOne.CurentPolynome, polyHandlerTwo.CurentPolynome);
-        UpdateResultText(false);
-    }
+    #region SimpleOperations
+        public void OnAddPolynomials()
+        {
+            ResultPolynome = FuncS.PAdd(polyHandlerOne.CurentPolynome, polyHandlerTwo.CurentPolynome);
+            UpdateResultText(false);
+        }
 
-    public void OnSubtractPolynomials()
-    {
-        ResultPolynome = FuncS.PSub(polyHandlerOne.CurentPolynome, polyHandlerTwo.CurentPolynome);
-        UpdateResultText(false);
-    }
+        public void OnSubtractPolynomials()
+        {
+            ResultPolynome = FuncS.PSub(polyHandlerOne.CurentPolynome, polyHandlerTwo.CurentPolynome);
+            UpdateResultText(false);
+        }
 
-    public void OnMultiplyPolynomials()
-    {
-        ResultPolynome = FuncS.PMul(polyHandlerOne.CurentPolynome, polyHandlerTwo.CurentPolynome);
-        UpdateResultText(false);
-    }
+        public void OnMultiplyPolynomials()
+        {
+            ResultPolynome = FuncS.PMul(polyHandlerOne.CurentPolynome, polyHandlerTwo.CurentPolynome);
+            UpdateResultText(false);
+        }
 
-    public void OnDeriveResult()
-    {
-        ResultPolynome = FuncC.PDerive(ResultPolynome);
-        UpdateResultText(false);
-    }
+        public void OnDividePolynomials()
+        {
+            KeyValuePair<Polynome, Polynome> result = FuncS.PDiv(polyHandlerOne.CurentPolynome, polyHandlerTwo.CurentPolynome);
+            ResultPolynome = result.Key;
+            UpdateResultText(false);
+            resultText.text += " R: " + PolynomeParser.FormatMathNotationPolynome(result.Value);
+        }
+    #endregion
 
-    public void OnIntegrateResult()
-    {
-        ResultPolynome = FuncC.PIntegrate(ResultPolynome);
-        UpdateResultText(true);
-    }
+    #region ComplexOperations
+        public void OnDeriveResult()
+        {
+            ResultPolynome = FuncC.PDerive(ResultPolynome);
+            UpdateResultText(false);
+        }
+
+        public void OnIntegrateResult()
+        {
+            ResultPolynome = FuncC.PIntegrate(ResultPolynome);
+            UpdateResultText(true);
+        }
+    #endregion
 
     public void SetXInputPolynome()
     {
