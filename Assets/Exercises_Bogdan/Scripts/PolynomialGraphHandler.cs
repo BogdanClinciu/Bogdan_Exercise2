@@ -2,22 +2,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using PolynomeMath;
+using PolynomialMath;
 using System.Linq;
 
 /// <summary>Plots and draws graph for x value range for a given polynomial.
 /// </summary>
-public class PolynomeGraphHandler : MonoBehaviour
+public class PolynomialGraphHandler : MonoBehaviour
 {
-
     #region UI_References
         [SerializeField]
         private RectTransform graphRect;
         [SerializeField]
         private LineRenderer graphRenderer;
+
+        [SerializeField]
+        private Slider scaleSlider;
+        [SerializeField]
+        private Text scaleText;
     #endregion
 
-    private static Polynome polynome;
+    private static Polynomial polynomial;
 
     private Vector3[] plotPoints;
     private Vector3 graphCenterPos;
@@ -27,15 +31,18 @@ public class PolynomeGraphHandler : MonoBehaviour
     private const int BASE_DIVISIONS = 25;
     private const int GRAPH_LIMITS = 10;
 
+    private int scale = 1;
+    private const string SCALE_LABEL = "Scale = 1×";
 
     private void Start()
     {
         SizeGraphRect();
+        scaleText.text = SCALE_LABEL + scale;
     }
 
-    public static void SetGraphPolynome(Polynome polynomeToPlot)
+    public static void SetGraphPolynomial(Polynomial polynomialToPlot)
     {
-        polynome = polynomeToPlot;
+        polynomial = polynomialToPlot;
     }
 
     public void PlotGraph()
@@ -46,8 +53,8 @@ public class PolynomeGraphHandler : MonoBehaviour
         //We then evaluate for evenly divided points within graph x limits
         for (int i = 0; i < plotPoints.Length; i++)
         {
-            plotPoints[i].x = Mathf.Lerp(-GRAPH_LIMITS, GRAPH_LIMITS, (float)i/(plotPoints.Length - 1));
-            plotPoints[i].y = FuncS.PVal(polynome, plotPoints[i].x);
+            plotPoints[i].x = Mathf.Lerp(-GRAPH_LIMITS * scale, GRAPH_LIMITS * scale, (float)i/(plotPoints.Length - 1));
+            plotPoints[i].y = SimpleOperations.PlynomialEvaluate(polynomial, plotPoints[i].x);
         }
 
         //Based on min, and max values we determine the x axis scalar we need in order to limit the graph to out grid rect
@@ -75,8 +82,15 @@ public class PolynomeGraphHandler : MonoBehaviour
             }
         }
 
+
         graphRenderer.positionCount = ajustedPoints.Count;
         graphRenderer.SetPositions(ajustedPoints.ToArray());
+    }
+
+    public void OnChangeScaleSliderValue()
+    {
+        scale = (int)scaleSlider.value;
+        scaleText.text = SCALE_LABEL + scale;
     }
 
     private void SizeGraphRect()

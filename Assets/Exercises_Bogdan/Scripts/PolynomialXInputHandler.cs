@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using PolynomeMath;
+using PolynomialMath;
 
 /// <summary>Handles the x input for value/evaluate type operations.
 /// </summary>
-public class PolynomeXInputHandler : MonoBehaviour
+public class PolynomialXInputHandler : MonoBehaviour
 {
    [SerializeField]
    private GameObject xInputParent;
@@ -13,7 +13,7 @@ public class PolynomeXInputHandler : MonoBehaviour
    [SerializeField]
    private Button xValueConfirmButton;
 
-   private static Polynome ActivePolynome;
+   private static Polynomial ActivePolynomial;
 
    private bool hasValidValue = false;
    private float validatedValue = 0.0f;
@@ -27,9 +27,9 @@ public class PolynomeXInputHandler : MonoBehaviour
         }
     }
 
-    public static void SetActivePolynome(Polynome p)
+    public static void SetActivePolynomial(Polynomial p)
     {
-        ActivePolynome = new Polynome(p);
+        ActivePolynomial = new Polynomial(p);
     }
 
     public void ToggleXInputPanel()
@@ -40,7 +40,7 @@ public class PolynomeXInputHandler : MonoBehaviour
 
     public void OnConfirmXValue()
     {
-        PolynomeCalculator.OnUpdateUIString(FuncS.PValString(ActivePolynome, validatedValue));
+        PolynomialCalculator.OnUpdateUIString(SimpleOperations.PolynomialStringEvaluate(ActivePolynomial, validatedValue));
         ToggleXInputPanel();
     }
 

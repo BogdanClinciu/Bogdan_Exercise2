@@ -2,33 +2,34 @@
 using System.Linq;
 using UnityEngine;
 
-namespace PolynomeMath
+namespace PolynomialMath
 {
-    public class Polynome
+    public class Polynomial
     {
-        /// <summary> Contains the power as key and coeficient as value for each element of the polynome.
+        /// <summary> Contains the power as key and coeficient as value for each element of the polynomial.
         /// </summary>
         public Dictionary<int, float> elements;
 
         //DefaultConstructor
-        public Polynome()
+        public Polynomial()
         {
 
         }
 
         //Specific constructor
-        public Polynome(Dictionary<int, float> elements)
+        public Polynomial(Dictionary<int, float> elements)
         {
             elements = new Dictionary<int, float>(elements);
         }
 
         //Clone constructor
-        public Polynome(Polynome polynomeToClone)
+        public Polynomial(Polynomial polynomialToClone)
         {
-            elements = new Dictionary<int, float>(polynomeToClone.elements);
+            elements = new Dictionary<int, float>(polynomialToClone.elements);
         }
 
-        public Polynome(bool initializeElements)
+        //Initialized elements constructor
+        public Polynomial(bool initializeElements)
         {
             if(initializeElements)
             {
@@ -42,17 +43,17 @@ namespace PolynomeMath
     /// <para>This class contains simple polynomial operations:.</para>
     /// <para>Addition, Sudtraction, Multiplication and calculated value.
     /// </para>
-    /// <seealso cref="Polynome.cs"/>
-    /// <seealso cref="FuncC"/>
+    /// <seealso cref="Polynomial.cs"/>
+    /// <seealso cref="ComplexOperations"/>
     /// </summary>
-    public class FuncS
+    public class SimpleOperations
     {
 
         /// <summary>Add two polynomials together, and returns the resulting polynomial.
         /// </summary>
-        public static Polynome PAdd(Polynome p1, Polynome p2)
+        public static Polynomial PolynomialAddition(Polynomial p1, Polynomial p2)
         {
-            Polynome result = new Polynome();
+            Polynomial result = new Polynomial();
             result.elements = new Dictionary<int, float>(p1.elements);
 
             foreach (int key in p2.elements.Keys)
@@ -79,9 +80,9 @@ namespace PolynomeMath
 
         /// <summary>Subtracts the second polynomial from the first and returns the resulting polynomial.
         /// </summary>
-        public static Polynome PSub(Polynome p1, Polynome p2)
+        public static Polynomial PolynomialSubtraction(Polynomial p1, Polynomial p2)
         {
-            Polynome result = new Polynome();
+            Polynomial result = new Polynomial();
             result.elements = new Dictionary<int, float>(p1.elements);
 
             foreach (int key in p2.elements.Keys)
@@ -109,9 +110,9 @@ namespace PolynomeMath
 
         /// <summary>Multiplies two polynomials and returns the resulting polynomial.
         /// </summary>
-        public static Polynome PMul(Polynome p1, Polynome p2)
+        public static Polynomial PolynomialMultiplication(Polynomial p1, Polynomial p2)
         {
-            Polynome result = new Polynome(true);
+            Polynomial result = new Polynomial(true);
 
             for (int i = 0; i < p1.elements.Count; i++)
             {
@@ -137,17 +138,17 @@ namespace PolynomeMath
 
         /// <summary>Divides the first (numerator) polynomial by the second one(denominator) and returns result + remainder as polynomials.
         /// </summary>
-        public static KeyValuePair<Polynome,Polynome> PDiv(Polynome p1, Polynome p2)
+        public static KeyValuePair<Polynomial,Polynomial> PolynomialDivision(Polynomial p1, Polynomial p2)
         {
             //In case the denominator polynomial har more ellements we simply return the fisrt as the remainder
             if(p2.elements.Count > p1.elements.Count)
             {
-                return new KeyValuePair<Polynome, Polynome> (new Polynome(true), p1);
+                return new KeyValuePair<Polynomial, Polynomial> (new Polynomial(true), p1);
             }
 
-            Polynome result = new Polynome(true);
-            Polynome numerator = new Polynome(p1);      //above fraction line
-            Polynome denominator = new Polynome(p2);    //below fraction line
+            Polynomial result = new Polynomial(true);
+            Polynomial numerator = new Polynomial(p1);      //above fraction line
+            Polynomial denominator = new Polynomial(p2);    //below fraction line
 
             //we determine the initial amount of iterations of the long division algorith we pass trough
             int stepCount = numerator.elements.Count - 1;
@@ -165,19 +166,19 @@ namespace PolynomeMath
                     break;
                 }
 
-                //We create the multiplier polynome with the key and value we determined above
-                Polynome multiplier = new Polynome(true);
+                //We create the multiplier polynomial with the key and value we determined above
+                Polynomial multiplier = new Polynomial(true);
                 multiplier.elements.Add(key, val);
 
                 //At this point add the multiplier polynomial to the result
-                result = PAdd(result, multiplier);
+                result = PolynomialAddition(result, multiplier);
 
                 //Create subtractor that we will subtract from the numerator
-                Polynome subtractor = new Polynome(true);
-                subtractor = PMul(multiplier, denominator);
+                Polynomial subtractor = new Polynomial(true);
+                subtractor = PolynomialMultiplication(multiplier, denominator);
 
                 //We then subtract the subtractor from the numerator
-                numerator = PSub(numerator, subtractor);
+                numerator = PolynomialSubtraction(numerator, subtractor);
 
                 //not quite sure why this is needed yet but to afraid to remove
                 if (key == 0)
@@ -189,12 +190,12 @@ namespace PolynomeMath
                 stepCount --;
             }
 
-            return new KeyValuePair<Polynome, Polynome>(result,numerator);
+            return new KeyValuePair<Polynomial, Polynomial>(result,numerator);
         }
 
         /// <summary>Evaluates the polynomial at the specified x value and returns the result as a string.
         /// </summary>
-        public static string PValString(Polynome p1, float xValue)
+        public static string PolynomialStringEvaluate(Polynomial p1, float xValue)
         {
             float result = 0;
 
@@ -208,7 +209,7 @@ namespace PolynomeMath
 
         /// <summary>Evaluates the polynomial at the specified x value and returns the result as a float.
         /// </summary>
-        public static float PVal(Polynome p1, float xValue)
+        public static float PlynomialEvaluate(Polynomial p1, float xValue)
         {
             float result = 0;
 
@@ -225,17 +226,17 @@ namespace PolynomeMath
     /// <para>This class contains complex polynomial operations:.</para>
     /// <para>Derivation, Integration.
     ///</para>
-    /// <seealso cref="Polynome.cs"/>
-    /// <seealso cref="FuncS"/>
+    /// <seealso cref="Polynomial.cs"/>
+    /// <seealso cref="SimpleOperations"/>
     /// </summary>
-    public class FuncC
+    public class ComplexOperations
     {
 
         /// <summary>Derives a polynomial and returns the resulting polynomial.
         /// </summary>
-        public static Polynome PDerive(Polynome p1)
+        public static Polynomial PlynomialDerivative(Polynomial p1)
         {
-            Polynome result = new Polynome(true);
+            Polynomial result = new Polynomial(true);
 
             for (int i = 0; i < p1.elements.Count; i++)
             {
@@ -254,9 +255,9 @@ namespace PolynomeMath
 
         /// <summary>Integrates a polynomial and returns the resulting polynomial.
         /// </summary>
-        public static Polynome PIntegrate(Polynome p1)
+        public static Polynomial PlynomialIntegrate(Polynomial p1)
         {
-            Polynome result = new Polynome(true);
+            Polynomial result = new Polynomial(true);
             int denominator = p1.elements.ElementAt(0).Key;
 
             for (int i = 0; i < p1.elements.Count; i++)

@@ -3,19 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using PolynomeMath;
-using PolynomeUtils;
+using PolynomialMath;
+using PolynomialUtils;
 
 
 /// <summary>Handles two polynomial and single polynomial operations and result panel UI interactability.
 /// </summary>
-public class PolynomeCalculator : MonoBehaviour
+public class PolynomialCalculator : MonoBehaviour
 {
 
     [SerializeField]
-    private PolynomeHandler polyHandlerOne;
+    private PolynomialHandler polyHandlerOne;
     [SerializeField]
-    private PolynomeHandler polyHandlerTwo;
+    private PolynomialHandler polyHandlerTwo;
 
     #region UI_References
         [SerializeField]
@@ -40,7 +40,7 @@ public class PolynomeCalculator : MonoBehaviour
         private RectTransform graphContainer;
     #endregion
 
-    public static Polynome ResultPolynome;
+    public static Polynomial ResultPolynomial;
 
     public delegate void UpdateUI(bool isIntegrate);
     public delegate void UpdateUIString(string value);
@@ -52,9 +52,9 @@ public class PolynomeCalculator : MonoBehaviour
 
     private void Awake()
     {
-        ResultPolynome = new Polynome(true);
+        ResultPolynomial = new Polynomial(true);
 
-        //We set ToggleOperationButtons method to polyHandler one and two, in order to check and update buttons on polynome validation
+        //We set ToggleOperationButtons method to polyHandler one and two, in order to check and update buttons on polynomial validation
         polyHandlerOne.OnToggleButtons = ToggleOperationButtons;
         polyHandlerTwo.OnToggleButtons = ToggleOperationButtons;
 
@@ -67,7 +67,7 @@ public class PolynomeCalculator : MonoBehaviour
 
     private void Start()
     {
-        ResultPolynome.elements.Clear();
+        ResultPolynomial.elements.Clear();
         simpleOperationButtons = simpleOperationButtonsParent.GetComponentsInChildren<Button>();
         resultOperationButtons = resultOperationButtonsParent.GetComponentsInChildren<Button>();
         ToggleOperationButtons();
@@ -77,59 +77,59 @@ public class PolynomeCalculator : MonoBehaviour
     #region SimpleOperations
         public void OnAddPolynomials()
         {
-            ResultPolynome = FuncS.PAdd(polyHandlerOne.CurentPolynome, polyHandlerTwo.CurentPolynome);
+            ResultPolynomial = SimpleOperations.PolynomialAddition(polyHandlerOne.CurentPolynomial, polyHandlerTwo.CurentPolynomial);
             UpdateResultText(false);
         }
 
         public void OnSubtractPolynomials()
         {
-            ResultPolynome = FuncS.PSub(polyHandlerOne.CurentPolynome, polyHandlerTwo.CurentPolynome);
+            ResultPolynomial = SimpleOperations.PolynomialSubtraction(polyHandlerOne.CurentPolynomial, polyHandlerTwo.CurentPolynomial);
             UpdateResultText(false);
         }
 
         public void OnMultiplyPolynomials()
         {
-            ResultPolynome = FuncS.PMul(polyHandlerOne.CurentPolynome, polyHandlerTwo.CurentPolynome);
+            ResultPolynomial = SimpleOperations.PolynomialMultiplication(polyHandlerOne.CurentPolynomial, polyHandlerTwo.CurentPolynomial);
             UpdateResultText(false);
         }
 
         public void OnDividePolynomials()
         {
-            KeyValuePair<Polynome, Polynome> result = FuncS.PDiv(polyHandlerOne.CurentPolynome, polyHandlerTwo.CurentPolynome);
-            ResultPolynome = result.Key;
+            KeyValuePair<Polynomial, Polynomial> result = SimpleOperations.PolynomialDivision(polyHandlerOne.CurentPolynomial, polyHandlerTwo.CurentPolynomial);
+            ResultPolynomial = result.Key;
             UpdateResultText(false);
-            resultText.text += " R: " + PolynomeParser.FormatMathNotationPolynome(result.Value);
+            resultText.text += " R: " + PolynomialParser.FormatMathNotationPolynomial(result.Value);
         }
     #endregion
 
     #region ComplexOperations
         public void OnDeriveResult()
         {
-            ResultPolynome = FuncC.PDerive(ResultPolynome);
+            ResultPolynomial = ComplexOperations.PlynomialDerivative(ResultPolynomial);
             UpdateResultText(false);
         }
 
         public void OnIntegrateResult()
         {
-            ResultPolynome = FuncC.PIntegrate(ResultPolynome);
+            ResultPolynomial = ComplexOperations.PlynomialIntegrate(ResultPolynomial);
             UpdateResultText(true);
         }
     #endregion
 
-    public void SetXInputPolynome()
+    public void SetXInputPolynomial()
     {
-        PolynomeXInputHandler.SetActivePolynome(ResultPolynome);
+        PolynomialXInputHandler.SetActivePolynomial(ResultPolynomial);
     }
 
-    public void SetGraphPolynome()
+    public void SetGraphPolynomial()
     {
-        PolynomeGraphHandler.SetGraphPolynome(ResultPolynome);
+        PolynomialGraphHandler.SetGraphPolynomial(ResultPolynomial);
     }
 
-    //Toggles the operation buttons on if both PolynomeHandlers curently have a valid polynomial
+    //Toggles the operation buttons on if both PolynomialHandlers curently have a valid polynomial
     private void ToggleOperationButtons()
     {
-        bool buttonsState = (polyHandlerOne.IsPolynomeValid && polyHandlerTwo.IsPolynomeValid);
+        bool buttonsState = (polyHandlerOne.IsPolynomialValid && polyHandlerTwo.IsPolynomialValid);
         if(lastButtonsState != buttonsState)
         {
             lastButtonsState = buttonsState;
@@ -139,7 +139,7 @@ public class PolynomeCalculator : MonoBehaviour
 
     private void UpdateResultText(bool isIntegrate)
     {
-        resultText.text = PolynomeParser.FormatMathNotationPolynome(ResultPolynome);
+        resultText.text = PolynomialParser.FormatMathNotationPolynomial(ResultPolynomial);
         if(isIntegrate)
         {
             resultText.text += CONSTANT;
@@ -149,14 +149,14 @@ public class PolynomeCalculator : MonoBehaviour
 
     private void UpdateResultText(string value)
     {
-        ResultPolynome.elements.Clear();
+        ResultPolynomial.elements.Clear();
         resultText.text = value;
         UI_Utils.ToggleButtonInteractability(resultOperationButtons, false);
     }
 
     private void ToggleResultButtons()
     {
-        bool targetState = (ResultPolynome != null && ResultPolynome.elements.Count > 0);
+        bool targetState = (ResultPolynomial != null && ResultPolynomial.elements.Count > 0);
         UI_Utils.ToggleButtonInteractability(resultOperationButtons, targetState);
     }
 }
