@@ -11,6 +11,8 @@ public class PolynomialGraphHandler : MonoBehaviour
 {
     #region UI_References
         [SerializeField]
+        private RectTransform graphDisplayRect;
+        [SerializeField]
         private RectTransform graphRect;
         [SerializeField]
         private LineRenderer graphRenderer;
@@ -27,7 +29,6 @@ public class PolynomialGraphHandler : MonoBehaviour
     private Vector3 graphCenterPos;
     private float graphRectHeight;
 
-    private const int BASE_POINT_COUNT = 10;
     private const int BASE_DIVISIONS = 25;
     private const int GRAPH_LIMITS = 10;
 
@@ -69,25 +70,11 @@ public class PolynomialGraphHandler : MonoBehaviour
             plotPoints[i] += graphCenterPos;
         }
 
-        //Remove out of bounds vectors graphRect.TransformPoint(graphRect.rect.max), graphRect.TransformPoint(graphRect.rect.min)
-        List<Vector3> ajustedPoints = new List<Vector3>();
-        for (int i = 0; i < plotPoints.Length; i++)
-        {
-            if(plotPoints[i].y < (graphRect.TransformPoint(graphRect.rect.max).y))
-            {
-                if(plotPoints[i].y > (graphRect.TransformPoint(graphRect.rect.min).y))
-                {
-                    ajustedPoints.Add(plotPoints[i]);
-                }
-            }
-        }
-
-
-        graphRenderer.positionCount = ajustedPoints.Count;
-        graphRenderer.SetPositions(ajustedPoints.ToArray());
+        graphRenderer.positionCount = plotPoints.Length;
+        graphRenderer.SetPositions(plotPoints);
     }
 
-    public void OnChangeScaleSliderValue()
+    public void ChangeScaleValue()
     {
         scale = (int)scaleSlider.value;
         scaleText.text = SCALE_LABEL + scale;
@@ -98,5 +85,7 @@ public class PolynomialGraphHandler : MonoBehaviour
         graphRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, graphRect.rect.height);
         graphRectHeight = Vector3.Distance(graphRect.TransformPoint(graphRect.rect.max), graphRect.TransformPoint(graphRect.rect.min)) / Mathf.Sqrt(2);
         graphCenterPos = graphRect.TransformPoint(graphRect.rect.center);
+
+        graphDisplayRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, graphDisplayRect.rect.height);
     }
 }

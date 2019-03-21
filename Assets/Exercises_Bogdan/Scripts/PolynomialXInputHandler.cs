@@ -38,7 +38,7 @@ public class PolynomialXInputHandler : MonoBehaviour
         ResetInputField();
     }
 
-    public void OnConfirmXValue()
+    public void ConfirmXValue()
     {
         PolynomialCalculator.OnUpdateUIString(SimpleOperations.PolynomialStringEvaluate(ActivePolynomial, validatedValue));
         ToggleXInputPanel();

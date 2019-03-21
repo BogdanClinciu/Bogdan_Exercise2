@@ -16,10 +16,12 @@ namespace PolynomialUtils
 
         private static readonly List<char> allowedCharList = new List<char>() { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', ' ', '.'};
         private static readonly List<string> superscriptMap = new List<string>() {"⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"};
-        private const string SPACE = " ";
-        private const string X_MARK = "x";
-        private const string PLUS_MARK = "+";
-        private const string MINUS_MARK = "-";
+        private const char SPACE = ' ';
+        private const char X_MARK = 'x';
+        private const char PLUS_MARK = '+';
+        private const char MINUS_MARK = '-';
+        private const char DECIMAL_DOT = '.';
+        private const char DOT_SPACE = ' ';
 
 
         /// <summary>Parses input string to Polynomial and updates math notation text.
@@ -29,7 +31,7 @@ namespace PolynomialUtils
         {
             if(input.Length > 0)
             {
-                string[] splitInput = input.Split(' ');
+                string[] splitInput = input.Split(DOT_SPACE);
                 polynomial.elements.Clear();
                 for (int i = splitInput.Length - 1; i >= 0; i--)
                 {
@@ -93,7 +95,7 @@ namespace PolynomialUtils
 
             if(value <= 1)
             {
-                return (value.Equals(0)) ? superscript : X_MARK;
+                return (value.Equals(0)) ? superscript : X_MARK.ToString();
             }
 
             superscript += X_MARK;
@@ -114,7 +116,7 @@ namespace PolynomialUtils
             {
                 if(!isLast && notationString.Length > 0)
                 {
-                    return PLUS_MARK + SPACE;
+                    return PLUS_MARK + SPACE.ToString();
                 }
                 else
                 {
@@ -123,7 +125,7 @@ namespace PolynomialUtils
             }
             else
             {
-                return MINUS_MARK + SPACE;
+                return MINUS_MARK + SPACE.ToString();
             }
         }
 
@@ -136,65 +138,70 @@ namespace PolynomialUtils
          */
         public static char PolynomialInputValidation(string input, int charIndex, char addedChar)
         {
-            if(!allowedCharList.Contains(addedChar))
+            if(allowedCharList.Contains(addedChar))
             {
-                return new char();
-            }
-            else
-            {
-                if(addedChar.Equals('-'))
+                if(addedChar.Equals(MINUS_MARK))
                 {
-                    if (charIndex.Equals(0) || input[charIndex - 1].Equals(' '))
+                    if (charIndex.Equals(0) || input[charIndex - 1].Equals(DOT_SPACE))
                     {
                         return addedChar;
                     }
-                    else
-                    {
-                        return new char();
-                    }
                 }
-                else if(addedChar.Equals(' '))
+                else if(addedChar.Equals(SPACE))
                 {
-                    if(!charIndex.Equals(0) && !input[charIndex - 1].Equals(' ') && !input[charIndex - 1].Equals('-'))
+                    if(!charIndex.Equals(0) && !input[charIndex - 1].Equals(DOT_SPACE) && !input[charIndex - 1].Equals(MINUS_MARK) && !input[charIndex - 1].Equals(DECIMAL_DOT))
                     {
-                        return addedChar;
-                    }
-                    else
-                    {
-                        return new char();
-                    }
-                }
-                else if (addedChar.Equals('.'))
-                {
-                    if(input.Length > 0 && Char.IsDigit(input[charIndex -1]))
-                    {
-                        bool canPlaceDecimalPoint = false;
-                        for(int i = input.Length -1; i >= 0; i--)
+                        if(charIndex >= input.Length)
                         {
-                            if(input[i].Equals(' '))
+                            return DOT_SPACE;
+                        }
+                        else if (!input[charIndex].Equals(DECIMAL_DOT) && !input[charIndex].Equals(DOT_SPACE))
+                        {
+                            return DOT_SPACE;
+                        }
+                    }
+                }
+                else if (addedChar.Equals(DECIMAL_DOT))
+                {
+
+                    if(input.Length > 0 && !charIndex.Equals(0) && Char.IsDigit(input[charIndex -1]) && !input[charIndex - 1].Equals(MINUS_MARK))
+                    {
+                        bool canPlaceDecimalPoint = true;
+                        int substringEndIndex = 0;
+
+                        for (int i = charIndex - 1; i < input.Length; i++)
+                        {
+                            if(input[i].Equals(DOT_SPACE) || i.Equals(input.Length -1))
                             {
-                                canPlaceDecimalPoint = true;
+                                substringEndIndex = i;
+                                break;
+                            }
+                        }
+
+                        for(int i = substringEndIndex; i >= 0; i--)
+                        {
+                            if(!i.Equals(substringEndIndex) && input[i].Equals(DOT_SPACE))
+                            {
+                                break;
                             }
 
-                            if(input[i].Equals('.'))
+                            if(input[i].Equals(DECIMAL_DOT))
                             {
                                 canPlaceDecimalPoint = false;
+                                break;
                             }
-
-                            canPlaceDecimalPoint = true;
                         }
+
                         return (canPlaceDecimalPoint) ? addedChar : new char();
                     }
-                    else
-                    {
-                        return new char();
-                    }
                 }
-                else
+                else if (char.IsDigit(addedChar))
                 {
                     return addedChar;
                 }
             }
+
+            return new char();
         }
     }
 

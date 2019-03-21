@@ -62,13 +62,13 @@ public class PolynomialHandler : MonoBehaviour
         polyInputField.onValueChanged.RemoveAllListeners();
     }
 
-    public void OnDerive()
+    public void Derivative()
     {
         PolynomialCalculator.ResultPolynomial = ComplexOperations.PlynomialDerivative(CurentPolynomial);
         PolynomialCalculator.OnUpdateUI(false);
     }
 
-    public void OnIntegrate()
+    public void Integrate()
     {
         PolynomialCalculator.ResultPolynomial = ComplexOperations.PlynomialIntegrate(CurentPolynomial);
         PolynomialCalculator.OnUpdateUI(true);

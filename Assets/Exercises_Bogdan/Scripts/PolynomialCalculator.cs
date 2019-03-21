@@ -7,6 +7,7 @@ using PolynomialMath;
 using PolynomialUtils;
 
 
+
 /// <summary>Handles two polynomial and single polynomial operations and result panel UI interactability.
 /// </summary>
 public class PolynomialCalculator : MonoBehaviour
@@ -32,12 +33,6 @@ public class PolynomialCalculator : MonoBehaviour
 
         [SerializeField]
         private GameObject xInputParent;
-
-        //Graph related UI elements
-        [SerializeField]
-        private Slider graphIterationSlider;
-        [SerializeField]
-        private RectTransform graphContainer;
     #endregion
 
     public static Polynomial ResultPolynomial;
@@ -75,25 +70,25 @@ public class PolynomialCalculator : MonoBehaviour
     }
 
     #region SimpleOperations
-        public void OnAddPolynomials()
+        public void AddPolynomials()
         {
             ResultPolynomial = SimpleOperations.PolynomialAddition(polyHandlerOne.CurentPolynomial, polyHandlerTwo.CurentPolynomial);
             UpdateResultText(false);
         }
 
-        public void OnSubtractPolynomials()
+        public void SubtractPolynomials()
         {
             ResultPolynomial = SimpleOperations.PolynomialSubtraction(polyHandlerOne.CurentPolynomial, polyHandlerTwo.CurentPolynomial);
             UpdateResultText(false);
         }
 
-        public void OnMultiplyPolynomials()
+        public void MultiplyPolynomials()
         {
             ResultPolynomial = SimpleOperations.PolynomialMultiplication(polyHandlerOne.CurentPolynomial, polyHandlerTwo.CurentPolynomial);
             UpdateResultText(false);
         }
 
-        public void OnDividePolynomials()
+        public void DividePolynomials()
         {
             KeyValuePair<Polynomial, Polynomial> result = SimpleOperations.PolynomialDivision(polyHandlerOne.CurentPolynomial, polyHandlerTwo.CurentPolynomial);
             ResultPolynomial = result.Key;
@@ -103,13 +98,13 @@ public class PolynomialCalculator : MonoBehaviour
     #endregion
 
     #region ComplexOperations
-        public void OnDeriveResult()
+        public void DerivativeResult()
         {
             ResultPolynomial = ComplexOperations.PlynomialDerivative(ResultPolynomial);
             UpdateResultText(false);
         }
 
-        public void OnIntegrateResult()
+        public void IntegrateResult()
         {
             ResultPolynomial = ComplexOperations.PlynomialIntegrate(ResultPolynomial);
             UpdateResultText(true);
