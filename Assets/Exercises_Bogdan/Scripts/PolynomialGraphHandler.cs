@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using PolynomialMath;
 using System.Linq;
@@ -26,14 +24,14 @@ public class PolynomialGraphHandler : MonoBehaviour
     private static Polynomial polynomial;
 
     private Vector3[] plotPoints;
-    private Vector3 graphCenterPos;
     private float graphRectHeight;
 
-    private const int BASE_DIVISIONS = 25;
-    private const int GRAPH_LIMITS = 10;
+    private const int BASE_DIVISIONS = 250;
+    public const int GRAPH_LIMITS = 10;
 
     private int scale = 1;
     private const string SCALE_LABEL = "Scale: 1×";
+    private Vector3[] graphPointsCache;
 
     private void Start()
     {
@@ -48,6 +46,10 @@ public class PolynomialGraphHandler : MonoBehaviour
 
     public void PlotGraph()
     {
+        if(polynomial == null)
+        {
+            return;
+        }
         //Create a new array with the desired amout of points
         plotPoints = new Vector3[GRAPH_LIMITS * BASE_DIVISIONS];
 
@@ -67,9 +69,11 @@ public class PolynomialGraphHandler : MonoBehaviour
             plotPoints[i].x *= (-scaleXToFit);
             plotPoints[i].y *= (-scaleXToFit);
             plotPoints[i].z = 0;
-            plotPoints[i] += graphCenterPos;
+            plotPoints[i] += graphRect.TransformPoint(graphRect.rect.center);
         }
 
+        graphPointsCache = new Vector3[plotPoints.Length];
+        System.Array.Copy(plotPoints, graphPointsCache, plotPoints.Length);
         graphRenderer.positionCount = plotPoints.Length;
         graphRenderer.SetPositions(plotPoints);
     }
@@ -80,11 +84,27 @@ public class PolynomialGraphHandler : MonoBehaviour
         scaleText.text = SCALE_LABEL + scale;
     }
 
+    public void OffsetGraphPoints(Vector3 offset, bool andSet)
+    {
+        if(graphRenderer.positionCount > 0)
+        {
+            for (int i = 0; i < graphRenderer.positionCount; i++)
+            {
+                plotPoints[i] = graphPointsCache[i] + offset;
+            }
+            graphRenderer.SetPositions(plotPoints);
+
+            if(andSet)
+            {
+                System.Array.Copy(plotPoints, graphPointsCache, plotPoints.Length);
+            }
+        }
+    }
+
     private void SizeGraphRect()
     {
         graphRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, graphRect.rect.height);
         graphRectHeight = Vector3.Distance(graphRect.TransformPoint(graphRect.rect.max), graphRect.TransformPoint(graphRect.rect.min)) / Mathf.Sqrt(2);
-        graphCenterPos = graphRect.TransformPoint(graphRect.rect.center);
 
         graphDisplayRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, graphDisplayRect.rect.height);
     }
