@@ -33,7 +33,7 @@ public class PolynomialGraphHandler : MonoBehaviour
     private const int GRAPH_LIMITS = 10;
 
     private int scale = 1;
-    private const string SCALE_LABEL = "Scale = 1×";
+    private const string SCALE_LABEL = "Scale: 1×";
 
     private void Start()
     {

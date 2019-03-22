@@ -7,7 +7,6 @@ using PolynomialMath;
 using PolynomialUtils;
 
 
-
 /// <summary>Handles two polynomial and single polynomial operations and result panel UI interactability.
 /// </summary>
 public class PolynomialCalculator : MonoBehaviour
