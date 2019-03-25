@@ -66,8 +66,8 @@ public class PolynomialGraphHandler : MonoBehaviour
         //We then normalize all points with respect to the grid rect height
         for (int i = 0; i < plotPoints.Length; i++)
         {
-            plotPoints[i].x *= (-scaleXToFit);
-            plotPoints[i].y *= (-scaleXToFit);
+            plotPoints[i].x *= (-scaleXToFit) * graphRect.localScale.x;
+            plotPoints[i].y *= (-scaleXToFit) * graphRect.localScale.y;
             plotPoints[i].z = 0;
             plotPoints[i] += graphRect.TransformPoint(graphRect.rect.center);
         }
@@ -84,20 +84,15 @@ public class PolynomialGraphHandler : MonoBehaviour
         scaleText.text = SCALE_LABEL + scale;
     }
 
-    public void OffsetGraphPoints(Vector3 offset, bool andSet)
+    public void OffsetGraphPoints(Vector3 offset, float scale)
     {
         if(graphRenderer.positionCount > 0)
         {
             for (int i = 0; i < graphRenderer.positionCount; i++)
             {
-                plotPoints[i] = graphPointsCache[i] + offset;
+                plotPoints[i] = graphPointsCache[i] * scale + offset;
             }
             graphRenderer.SetPositions(plotPoints);
-
-            if(andSet)
-            {
-                System.Array.Copy(plotPoints, graphPointsCache, plotPoints.Length);
-            }
         }
     }
 
